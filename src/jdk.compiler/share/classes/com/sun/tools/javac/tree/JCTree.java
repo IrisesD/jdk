@@ -361,6 +361,7 @@ public abstract class JCTree implements Tree, Cloneable, DiagnosticPosition {
         MUL,                             // *
         DIV,                             // /
         MOD,                             // %
+        CONCAT,                          // ***
 
         /** Assignment operators, of type Assignop.
          */
@@ -390,7 +391,7 @@ public abstract class JCTree implements Tree, Cloneable, DiagnosticPosition {
 
         private final Tag noAssignTag;
 
-        private static final int numberOfOperators = MOD.ordinal() - POS.ordinal() + 1;
+        private static final int numberOfOperators = CONCAT.ordinal() - POS.ordinal() + 1;
 
         private Tag(Tag noAssignTag) {
             this.noAssignTag = noAssignTag;

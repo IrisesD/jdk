@@ -764,7 +764,6 @@ public class JavaTokenizer extends UnicodeReader {
         while (true) {
             put();
             TokenKind newtk = tokens.lookupKind(sb.toString());
-
             if (newtk == TokenKind.IDENTIFIER) {
                 sb.setLength(sb.length() - 1);
                 break;

@@ -1209,6 +1209,7 @@ public class JavacParser implements Parser {
     JCExpression term2Rest(JCExpression t, int minprec) {
         JCExpression[] odStack = newOdStack();
         Token[] opStack = newOpStack();
+        Boolean isConcat = false;
 
         // optimization, was odStack = new Tree[...]; opStack = new Tree[...];
         int top = 0;
@@ -1256,6 +1257,27 @@ public class JavacParser implements Parser {
                     }
                 }
                 odStack[top] = F.at(pos).TypeTest(odStack[top], pattern);
+            } else if (token.kind == TRISTAR) {
+                isConcat = true;
+                int pos = token.pos;
+                nextToken();
+                JCExpression rhs = term3();
+               
+                Name addAllMethod = names.fromString("addAll");
+
+                JCFieldAccess addAllSelect = F.at(pos).Select(t, addAllMethod);
+                JCMethodInvocation addAllCall = F.at(pos).Apply(
+                    List.nil(),
+                    addAllSelect,
+                    List.of(rhs)
+                );
+                
+                t = F.at(pos).Conditional(
+                    addAllCall,  
+                    t,
+                    t            
+                );
+                
             } else {
                 topOp = token;
                 nextToken();
@@ -1269,11 +1291,12 @@ public class JavacParser implements Parser {
             }
         }
         Assert.check(top == 0);
-        t = odStack[0];
-
+        if (!isConcat) {
+            t = odStack[0];
+        }
         if (t.hasTag(JCTree.Tag.PLUS)) {
             t = foldStrings(t);
-        }
+        } 
 
         odStackSupply.add(odStack);
         opStackSupply.add(opStack);
@@ -5531,6 +5554,8 @@ public class JavacParser implements Parser {
             return MOD_ASG;
         case INSTANCEOF:
             return TYPETEST;
+        case TRISTAR:
+            return CONCAT;
         default:
             return NO_TAG;
         }

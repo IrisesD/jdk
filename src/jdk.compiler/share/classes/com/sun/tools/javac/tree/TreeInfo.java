@@ -1190,6 +1190,7 @@ public class TreeInfo {
         case DIV:
         case MOD: return mulPrec;
         case TYPETEST: return ordPrec;
+        case CONCAT: return addPrec;
         default: throw new AssertionError();
         }
     }
